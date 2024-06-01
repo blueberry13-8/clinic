@@ -133,7 +133,7 @@ class Database {
   /// Doctor
   Future<List<Doctor>> getDoctors() async {
     await connect();
-    var query = 'SELECT * FROM Departments';
+    var query = 'SELECT * FROM Doctor';
     final result = await conn!.execute(
       query,
     );
@@ -178,7 +178,7 @@ class Database {
   Future<void> updateDoctor(Doctor item) async {
     await connect();
     await conn!.execute(
-      r'UPDATE departments SET full_name=$1, specialty=$2, working_hours=$3, contact_number=$4, password=$5 WHERE id=$6',
+      r'UPDATE Doctor SET full_name=$1, specialty=$2, working_hours=$3, contact_number=$4, password=$5 WHERE id=$6',
       parameters: [
         item.fullName,
         item.specialty,
@@ -207,7 +207,6 @@ class Database {
           appointmentTime: result[i][3] as DateTime,
           room: result[i][4] as String,
           status: result[i][5] as String,
-          appointmentDate: result[i][6] as DateTime,
         ),
       );
     }
@@ -217,14 +216,13 @@ class Database {
   Future<void> addAppointment(Appointment item) async {
     await connect();
     await conn!.execute(
-      r'INSERT INTO Appointment (doctor_id, patient_id, appointment_time, room, status, appointment_date) VALUES ($1, $2, $3, $4, $5, $6)',
+      r'INSERT INTO Appointment (doctor_id, patient_id, appointment_time, room, status) VALUES ($1, $2, $3, $4, $5)',
       parameters: [
         item.doctorId,
         item.patientId,
         item.appointmentTime,
         item.room,
         item.status,
-        item.appointmentDate,
       ],
     );
   }
@@ -240,14 +238,13 @@ class Database {
   Future<void> updateAppointment(Appointment item) async {
     await connect();
     await conn!.execute(
-      r'UPDATE Appointment SET doctor_id=$1, patient_id=$2, appointment_time=$3, room=$4, status=$5, appointment_date=$6 WHERE id=$7',
+      r'UPDATE Appointment SET doctor_id=$1, patient_id=$2, appointment_time=$3, room=$4, status=$5 WHERE id=$6',
       parameters: [
         item.doctorId,
         item.patientId,
         item.appointmentTime,
         item.room,
         item.status,
-        item.appointmentDate,
         item.id,
       ],
     );

@@ -1,15 +1,15 @@
 import 'package:bloc/bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:clinic/features/app/domain/models/patient.dart';
 
-import '../../../domain/models/doctor.dart';
 import '../../../domain/repositories/database.dart';
 
-part 'doctor_state.dart';
+part 'patient_state.dart';
 
-part 'doctor_cubit.freezed.dart';
+part 'patient_cubit.freezed.dart';
 
-class DoctorCubit extends Cubit<DoctorState> {
-  DoctorCubit() : super(const DoctorState.initial());
+class PatientCubit extends Cubit<PatientState> {
+  PatientCubit() : super(const PatientState.initial());
 
   void select(int newIndex) {
     if (state case Success state) {
@@ -26,42 +26,42 @@ class DoctorCubit extends Cubit<DoctorState> {
     if (state case Success state) {
       prevState = state.copyWith();
     }
-    emit(const DoctorState.loading());
+    emit(const PatientState.loading());
     try {
-      final items = await Database().getDoctors();
+      final items = await Database().getPatients();
       emit(
-        DoctorState.success(
+        PatientState.success(
           items: items,
           selectedIndex: prevState?.selectedIndex,
         ),
       );
     } catch (e) {
-      emit(DoctorState.error(e.toString()));
+      emit(PatientState.error(e.toString()));
       rethrow;
     }
   }
 
-  Future<void> delete(Doctor item) async {
+  Future<void> delete(Patient item) async {
     Success? prevState;
     if (state case Success state) {
       prevState = state.copyWith();
     }
-    emit(const DoctorState.loading());
+    emit(const PatientState.loading());
     try {
-      await Database().deleteDoctor(item);
-      final items = await Database().getDoctors();
+      await Database().deletePatient(item);
+      final items = await Database().getPatients();
       final selectedIndex =
-          prevState != null && item.id == prevState.selectedIndex
-              ? null
-              : prevState?.selectedIndex;
+      prevState != null && item.id == prevState.selectedIndex
+          ? null
+          : prevState?.selectedIndex;
       emit(
-        DoctorState.success(
+        PatientState.success(
           items: items,
           selectedIndex: selectedIndex,
         ),
       );
     } catch (e) {
-      emit(DoctorState.error(e.toString()));
+      emit(PatientState.error(e.toString()));
       rethrow;
     }
   }
@@ -73,12 +73,13 @@ class DoctorCubit extends Cubit<DoctorState> {
         state.copyWith(
           items: [
             ...state.items,
-            Doctor(
+            Patient(
               id: id + 1,
               fullName: '',
-              specialty: '',
-              workingHours: '',
+              age: 1,
               contactNumber: '',
+              address: '',
+              gender: '',
               password: '',
             ),
           ],
@@ -89,29 +90,29 @@ class DoctorCubit extends Cubit<DoctorState> {
   }
 
   Future<void> update(
-    Doctor item, [
-    bool isAdd = false,
-  ]) async {
+      Patient item, [
+        bool isAdd = false,
+      ]) async {
     Success? prevState;
     if (state case Success state) {
       prevState = state.copyWith();
     }
-    emit(const DoctorState.loading());
+    emit(const PatientState.loading());
     try {
       if (isAdd) {
-        await Database().addDoctor(item);
+        await Database().addPatient(item);
       } else {
-        await Database().updateDoctor(item);
+        await Database().updatePatient(item);
       }
-      final items = await Database().getDoctors();
+      final items = await Database().getPatients();
       emit(
-        DoctorState.success(
+        PatientState.success(
           items: items,
           selectedIndex: prevState?.selectedIndex,
         ),
       );
     } catch (e) {
-      emit(DoctorState.error(e.toString()));
+      emit(PatientState.error(e.toString()));
       rethrow;
     }
   }

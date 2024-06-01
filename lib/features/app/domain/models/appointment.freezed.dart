@@ -19,7 +19,6 @@ mixin _$Appointment {
   int get id => throw _privateConstructorUsedError;
   int get doctorId => throw _privateConstructorUsedError;
   int get patientId => throw _privateConstructorUsedError;
-  DateTime get appointmentDate => throw _privateConstructorUsedError;
   DateTime get appointmentTime => throw _privateConstructorUsedError;
   String get room => throw _privateConstructorUsedError;
   String get status => throw _privateConstructorUsedError;
@@ -39,7 +38,6 @@ abstract class $AppointmentCopyWith<$Res> {
       {int id,
       int doctorId,
       int patientId,
-      DateTime appointmentDate,
       DateTime appointmentTime,
       String room,
       String status});
@@ -61,7 +59,6 @@ class _$AppointmentCopyWithImpl<$Res, $Val extends Appointment>
     Object? id = null,
     Object? doctorId = null,
     Object? patientId = null,
-    Object? appointmentDate = null,
     Object? appointmentTime = null,
     Object? room = null,
     Object? status = null,
@@ -79,10 +76,6 @@ class _$AppointmentCopyWithImpl<$Res, $Val extends Appointment>
           ? _value.patientId
           : patientId // ignore: cast_nullable_to_non_nullable
               as int,
-      appointmentDate: null == appointmentDate
-          ? _value.appointmentDate
-          : appointmentDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       appointmentTime: null == appointmentTime
           ? _value.appointmentTime
           : appointmentTime // ignore: cast_nullable_to_non_nullable
@@ -111,7 +104,6 @@ abstract class _$$AppointmentImplCopyWith<$Res>
       {int id,
       int doctorId,
       int patientId,
-      DateTime appointmentDate,
       DateTime appointmentTime,
       String room,
       String status});
@@ -131,7 +123,6 @@ class __$$AppointmentImplCopyWithImpl<$Res>
     Object? id = null,
     Object? doctorId = null,
     Object? patientId = null,
-    Object? appointmentDate = null,
     Object? appointmentTime = null,
     Object? room = null,
     Object? status = null,
@@ -149,10 +140,6 @@ class __$$AppointmentImplCopyWithImpl<$Res>
           ? _value.patientId
           : patientId // ignore: cast_nullable_to_non_nullable
               as int,
-      appointmentDate: null == appointmentDate
-          ? _value.appointmentDate
-          : appointmentDate // ignore: cast_nullable_to_non_nullable
-              as DateTime,
       appointmentTime: null == appointmentTime
           ? _value.appointmentTime
           : appointmentTime // ignore: cast_nullable_to_non_nullable
@@ -176,7 +163,6 @@ class _$AppointmentImpl implements _Appointment {
       {required this.id,
       required this.doctorId,
       required this.patientId,
-      required this.appointmentDate,
       required this.appointmentTime,
       required this.room,
       required this.status});
@@ -188,8 +174,6 @@ class _$AppointmentImpl implements _Appointment {
   @override
   final int patientId;
   @override
-  final DateTime appointmentDate;
-  @override
   final DateTime appointmentTime;
   @override
   final String room;
@@ -198,7 +182,7 @@ class _$AppointmentImpl implements _Appointment {
 
   @override
   String toString() {
-    return 'Appointment(id: $id, doctorId: $doctorId, patientId: $patientId, appointmentDate: $appointmentDate, appointmentTime: $appointmentTime, room: $room, status: $status)';
+    return 'Appointment(id: $id, doctorId: $doctorId, patientId: $patientId, appointmentTime: $appointmentTime, room: $room, status: $status)';
   }
 
   @override
@@ -211,8 +195,6 @@ class _$AppointmentImpl implements _Appointment {
                 other.doctorId == doctorId) &&
             (identical(other.patientId, patientId) ||
                 other.patientId == patientId) &&
-            (identical(other.appointmentDate, appointmentDate) ||
-                other.appointmentDate == appointmentDate) &&
             (identical(other.appointmentTime, appointmentTime) ||
                 other.appointmentTime == appointmentTime) &&
             (identical(other.room, room) || other.room == room) &&
@@ -220,8 +202,8 @@ class _$AppointmentImpl implements _Appointment {
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, id, doctorId, patientId,
-      appointmentDate, appointmentTime, room, status);
+  int get hashCode => Object.hash(
+      runtimeType, id, doctorId, patientId, appointmentTime, room, status);
 
   @JsonKey(ignore: true)
   @override
@@ -235,7 +217,6 @@ abstract class _Appointment implements Appointment {
       {required final int id,
       required final int doctorId,
       required final int patientId,
-      required final DateTime appointmentDate,
       required final DateTime appointmentTime,
       required final String room,
       required final String status}) = _$AppointmentImpl;
@@ -246,8 +227,6 @@ abstract class _Appointment implements Appointment {
   int get doctorId;
   @override
   int get patientId;
-  @override
-  DateTime get appointmentDate;
   @override
   DateTime get appointmentTime;
   @override

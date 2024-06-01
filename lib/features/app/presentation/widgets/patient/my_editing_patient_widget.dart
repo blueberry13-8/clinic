@@ -1,38 +1,39 @@
-import 'package:clinic/features/app/domain/models/doctor.dart';
-import 'package:clinic/features/app/presentation/bloc/doctor/doctor_cubit.dart';
+import 'package:clinic/features/app/domain/models/patient.dart';
+import 'package:clinic/features/app/presentation/bloc/patient/patient_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../my_form_field.dart';
 
-class MyEditingDoctorTable extends StatefulWidget {
-  const MyEditingDoctorTable({
+class MyEditingPatientTable extends StatefulWidget {
+  const MyEditingPatientTable({
     super.key,
     required this.fields,
     this.item,
     required this.editable,
   });
 
-  final Doctor? item;
+  final Patient? item;
   final List<String> fields;
   final bool editable;
 
   @override
-  State<MyEditingDoctorTable> createState() =>
-      _MyEditingDoctorTableState();
+  State<MyEditingPatientTable> createState() =>
+      _MyEditingPatientTableState();
 }
 
-class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
+class _MyEditingPatientTableState extends State<MyEditingPatientTable> {
   @override
   void initState() {
     super.initState();
     if (widget.item == null) {
-      _item = const Doctor(
+      _item = const Patient(
         id: -1,
         fullName: '',
-        specialty: '',
-        workingHours: '',
+        age: 0,
         contactNumber: '',
+        address: '',
+        gender: '',
         password: '',
       );
     } else {
@@ -40,7 +41,7 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
     }
   }
 
-  late Doctor _item;
+  late Patient _item;
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
           fieldName: widget.fields[0],
           value: widget.item?.id,
           onChanged: (newValue) =>
-              _item = _item.copyWith(id: int.parse(newValue)),
+          _item = _item.copyWith(id: int.parse(newValue)),
           editable: widget.editable,
         ),
         MyFormField(
@@ -60,28 +61,20 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
           fieldName: widget.fields[1],
           value: widget.item?.fullName,
           onChanged: (newValue) =>
-              _item = _item.copyWith(fullName: newValue),
+          _item = _item.copyWith(fullName: newValue),
           editable: widget.editable,
         ),
         MyFormField(
           enabled: widget.editable,
           fieldName: widget.fields[2],
-          value: widget.item?.specialty,
+          value: widget.item?.age,
           onChanged: (newValue) =>
-          _item = _item.copyWith(specialty: newValue),
+          _item = _item.copyWith(age: int.parse(newValue)),
           editable: widget.editable,
         ),
         MyFormField(
           enabled: widget.editable,
           fieldName: widget.fields[3],
-          value: widget.item?.workingHours,
-          onChanged: (newValue) =>
-          _item = _item.copyWith(workingHours: newValue),
-          editable: widget.editable,
-        ),
-        MyFormField(
-          enabled: widget.editable,
-          fieldName: widget.fields[4],
           value: widget.item?.contactNumber,
           onChanged: (newValue) =>
           _item = _item.copyWith(contactNumber: newValue),
@@ -89,7 +82,23 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
         ),
         MyFormField(
           enabled: widget.editable,
+          fieldName: widget.fields[4],
+          value: widget.item?.address,
+          onChanged: (newValue) =>
+          _item = _item.copyWith(address: newValue),
+          editable: widget.editable,
+        ),
+        MyFormField(
+          enabled: widget.editable,
           fieldName: widget.fields[5],
+          value: widget.item?.gender,
+          onChanged: (newValue) =>
+          _item = _item.copyWith(gender: newValue),
+          editable: widget.editable,
+        ),
+        MyFormField(
+          enabled: widget.editable,
+          fieldName: widget.fields[6],
           value: widget.item?.password,
           onChanged: (newValue) =>
           _item = _item.copyWith(password: newValue),
@@ -104,10 +113,10 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
             ElevatedButton(
               onPressed: () {
                 if (widget.editable) {
-                  context.read<DoctorCubit>().update(
-                        _item,
-                        widget.item == null,
-                      );
+                  context.read<PatientCubit>().update(
+                    _item,
+                    widget.item == null,
+                  );
                 }
               },
               child: const Text('Обновить'),
@@ -118,9 +127,9 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
             ElevatedButton(
               onPressed: () async {
                 if (widget.editable && widget.item != null) {
-                  context.read<DoctorCubit>().delete(
-                        widget.item!,
-                      );
+                  context.read<PatientCubit>().delete(
+                    widget.item!,
+                  );
                 }
               },
               child: const Text('Удалить'),
