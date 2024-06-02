@@ -49,7 +49,7 @@ class _MyEditingPatientTableState extends State<MyEditingPatientTable> {
       mainAxisSize: MainAxisSize.min,
       children: [
         MyFormField(
-          enabled: widget.editable,
+          enabled: false,
           fieldName: widget.fields[0],
           value: widget.item?.id,
           onChanged: (newValue) =>

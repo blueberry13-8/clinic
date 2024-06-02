@@ -15,7 +15,7 @@ class Database {
 
   // TODO: Use data for current database
   final String user = 'postgres',
-      password = 'buter',
+      password = 'postgres',
       host = 'localhost',
       database = 'clinic_registry';
 
@@ -92,6 +92,7 @@ class Database {
   }
 
   Future<void> addPatient(Patient item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'INSERT INTO Patient (full_name, age, contact_number, address, gender, password) VALUES ($1, $2, $3, $4, $5, $6)',
@@ -101,7 +102,7 @@ class Database {
         item.contactNumber,
         item.address,
         item.gender,
-        item.password,
+        hashedPassword,
       ],
     );
   }
@@ -115,6 +116,7 @@ class Database {
   }
 
   Future<void> updatePatient(Patient item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'UPDATE Patient SET full_name=$1, age=$2, contact_number=$3, address=$4, gender=$5, password=$6 WHERE id=$7',
@@ -124,7 +126,7 @@ class Database {
         item.contactNumber,
         item.address,
         item.gender,
-        item.password,
+        hashedPassword,
         item.id
       ],
     );
@@ -154,6 +156,7 @@ class Database {
   }
 
   Future<void> addDoctor(Doctor item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'INSERT INTO Doctor (full_name, specialty, working_hours, contact_number, password) VALUES ($1, $2, $3, $4, $5)',
@@ -162,7 +165,7 @@ class Database {
         item.specialty,
         item.workingHours,
         item.contactNumber,
-        item.password
+        hashedPassword,
       ],
     );
   }
@@ -176,6 +179,7 @@ class Database {
   }
 
   Future<void> updateDoctor(Doctor item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'UPDATE Doctor SET full_name=$1, specialty=$2, working_hours=$3, contact_number=$4, password=$5 WHERE id=$6',
@@ -184,7 +188,7 @@ class Database {
         item.specialty,
         item.workingHours,
         item.contactNumber,
-        item.password,
+        hashedPassword,
         item.id
       ],
     );
