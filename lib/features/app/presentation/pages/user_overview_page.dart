@@ -12,7 +12,7 @@ class UserOverviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 2,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(
@@ -42,8 +42,8 @@ class UserOverviewPage extends StatelessWidget {
               // const PositionsPage(editable: false),
               // SalaryPaymentsPage(employeeId: login, editable: false),
               //UserTicketsPage(login: login),
-              const DoctorPage(editable: false),
-              const PatientPage(editable: false),
+              DoctorPage(editable: false),
+              PatientPage(editable: false),
             ],
           ),
         ),
