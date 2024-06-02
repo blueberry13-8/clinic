@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:logger/logger.dart';
 import 'package:postgres/postgres.dart';
+
 import '../models/appointment.dart';
 import '../models/doctor.dart';
-import '../models/patient.dart';
 import '../models/medical_history.dart';
-import 'package:crypto/crypto.dart';
+import '../models/patient.dart';
 
 class Database {
   static final Database _db = Database._privateConstructor();
@@ -46,16 +47,16 @@ class Database {
     return conn;
   }
 
-  Future<bool> login(String login, String password) async {
+  Future<bool> login(String login, String password, String role) async {
     await connect();
     var hashedPassword = md5.convert(utf8.encode(password)).toString();
     Result result;
-    try {
+    if (role == 'Пациент') {
       result = await conn!.execute(
         r'SELECT * FROM Patient WHERE id=$1 and password=$2',
         parameters: [login, hashedPassword],
       );
-    } catch (e) {
+    } else {
       result = await conn!.execute(
         r'SELECT * FROM Doctor WHERE id=$1 and password=$2',
         parameters: [login, hashedPassword],
@@ -195,9 +196,16 @@ class Database {
   }
 
   /// Appointment
-  Future<List<Appointment>> getAppointments() async {
+  Future<List<Appointment>> getAppointments(
+      {int? patientId, int? doctorId}) async {
     await connect();
     var query = 'SELECT * FROM Appointment';
+    if (patientId != null) {
+      query = 'SELECT * FROM Appointment WHERE patient_id=$patientId';
+    }
+    if (doctorId != null) {
+      query = 'SELECT * FROM Appointment WHERE doctor_id=$doctorId';
+    }
     final result = await conn!.execute(
       query,
     );

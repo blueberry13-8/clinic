@@ -9,10 +9,12 @@ import '../widgets/medical_history/my_editing_medical_history_widget.dart';
 class MedicalHistoryPage extends StatelessWidget {
   const MedicalHistoryPage({
     super.key,
-    required this.editable,
+    required this.editable, this.login, this.role,
   });
 
   final bool editable;
+  final String? login;
+  final String? role;
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +23,19 @@ class MedicalHistoryPage extends StatelessWidget {
       child: _MedicalHistoryPage(
         key: key,
         editable: editable,
+        login: login,
+        role: role,
       ),
     );
   }
 }
 
 class _MedicalHistoryPage extends StatefulWidget {
-  const _MedicalHistoryPage({super.key, required this.editable});
+  const _MedicalHistoryPage({super.key, required this.editable, this.login, this.role});
 
   final bool editable;
+  final String? login;
+  final String? role;
 
   @override
   State<_MedicalHistoryPage> createState() => _MedicalHistoryPageState();
@@ -51,6 +57,15 @@ class _MedicalHistoryPageState extends State<_MedicalHistoryPage> {
   }
 
   List<MedicalHistory> filtered(List<MedicalHistory> items, String? query) {
+    if (widget.role == 'Пациент' && widget.login != null) {
+      items = items
+          .where((element) => element.patientId == int.parse(widget.login!))
+          .toList();
+    } else if (widget.login != null) {
+      items = items
+          .where((element) => element.doctorId == int.parse(widget.login!))
+          .toList();
+    }
     if (query == null) return items;
     return items
         .where(

@@ -2,16 +2,20 @@ import 'package:clinic/features/app/domain/models/appointment.dart';
 import 'package:clinic/features/app/presentation/bloc/appointment/appointment_cubit.dart';
 import 'package:clinic/features/app/presentation/widgets/appointment/appointment_table.dart';
 import 'package:clinic/features/app/presentation/widgets/appointment/my_editing_appointment_widget.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AppointmentPage extends StatelessWidget {
   const AppointmentPage({
     super.key,
     required this.editable,
+    this.login,
+    this.role,
   });
 
   final bool editable;
+  final String? login;
+  final String? role;
 
   @override
   Widget build(BuildContext context) {
@@ -20,15 +24,20 @@ class AppointmentPage extends StatelessWidget {
       child: _AppointmentPage(
         key: key,
         editable: editable,
+        login: login,
+        role: role,
       ),
     );
   }
 }
 
 class _AppointmentPage extends StatefulWidget {
-  const _AppointmentPage({super.key, required this.editable});
+  const _AppointmentPage(
+      {super.key, required this.editable, this.login, this.role});
 
   final bool editable;
+  final String? login;
+  final String? role;
 
   @override
   State<_AppointmentPage> createState() => _AppointmentPageState();
@@ -50,13 +59,22 @@ class _AppointmentPageState extends State<_AppointmentPage> {
   }
 
   List<Appointment> filtered(List<Appointment> items, String? query) {
+    if (widget.role == 'Пациент' && widget.login != null) {
+      items = items
+          .where((element) => element.patientId == int.parse(widget.login!))
+          .toList();
+    } else if (widget.login != null) {
+      items = items
+          .where((element) => element.doctorId == int.parse(widget.login!))
+          .toList();
+    }
     if (query == null) return items;
     return items
         .where(
           (element) => element.id.toString().toLowerCase().contains(
-        query.toLowerCase(),
-      ),
-    )
+                query.toLowerCase(),
+              ),
+        )
         .toList();
   }
 
@@ -101,8 +119,7 @@ class _AppointmentPageState extends State<_AppointmentPage> {
                 ConstrainedBox(
                   constraints: const BoxConstraints(maxHeight: 400),
                   child: AppointmentTable(
-                    items:
-                    filtered(state.items, _searchController.text),
+                    items: filtered(state.items, _searchController.text),
                     selectedIndex: state.selectedIndex,
                     editable: widget.editable,
                   ),
@@ -115,8 +132,7 @@ class _AppointmentPageState extends State<_AppointmentPage> {
                     ),
                     child: MyEditingAppointmentTable(
                       item: state.selectedIndex! >= 0 &&
-                          state.selectedIndex! <
-                              state.items.length
+                              state.selectedIndex! < state.items.length
                           ? state.items[state.selectedIndex!]
                           : null,
                       fields: kAppointmentFields,
