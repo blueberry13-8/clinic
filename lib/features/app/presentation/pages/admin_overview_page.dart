@@ -1,5 +1,6 @@
 import 'package:clinic/features/app/presentation/pages/appointment_page.dart';
 import 'package:clinic/features/app/presentation/pages/doctor_page.dart';
+import 'package:clinic/features/app/presentation/pages/medical_history_page.dart';
 import 'package:clinic/features/app/presentation/pages/patient_page.dart';
 import 'package:flutter/material.dart';
 
@@ -9,7 +10,7 @@ class AdminOverviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(
@@ -24,11 +25,14 @@ class AdminOverviewPage extends StatelessWidget {
               Tab(
                 child: Text('Записи к врачам'),
               ),
+              Tab(
+                child: Text('История болезней'),
+              )
             ],
           ),
         ),
-        body: Padding(
-          padding: const EdgeInsets.symmetric(
+        body: const Padding(
+          padding: EdgeInsets.symmetric(
             horizontal: 0,
             vertical: 0,
           ),
@@ -37,6 +41,9 @@ class AdminOverviewPage extends StatelessWidget {
               DoctorPage(editable: true),
               PatientPage(editable: true),
               AppointmentPage(editable: true),
+              MedicalHistoryPage(
+                editable: true,
+              ),
             ],
           ),
         ),

@@ -286,7 +286,7 @@ class Database {
   Future<void> addMedicalHistory(MedicalHistory item) async {
     await connect();
     await conn!.execute(
-      r'INSERT INTO MedicalHistory (patient_id, diagnosis_date, doctor_id, escription) VALUES ($1, $2, $3, $4)',
+      r'INSERT INTO MedicalHistory (patient_id, diagnosis_date, doctor_id, description) VALUES ($1, $2, $3, $4)',
       parameters: [
         item.patientId,
         item.diagnosisDate,
@@ -307,7 +307,7 @@ class Database {
   Future<void> updateMedicalHistory(MedicalHistory item) async {
     await connect();
     await conn!.execute(
-      r'UPDATE MedicalHistory SET patient_id=$1, diagnosis_date=$2, doctor_id=$3, escription=$4 WHERE id=$5',
+      r'UPDATE MedicalHistory SET patient_id=$1, diagnosis_date=$2, doctor_id=$3, description=$4 WHERE id=$5',
       parameters: [
         item.patientId,
         item.diagnosisDate,
