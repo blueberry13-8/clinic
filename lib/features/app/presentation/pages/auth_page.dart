@@ -77,20 +77,20 @@ class _AuthPageState extends State<AuthPage> {
                   );
                   return;
                 }
-                bool login = await Database()
-                    .login(_controllerLogin.text, _controllerPassword.text);
-                if (login) {
+                if (_controllerLogin.text == 'admin' && _controllerPassword.text == 'Admin123') {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const AdminOverviewPage()),
+                  );
+                } else{
+                  bool login = await Database()
+                      .login(_controllerLogin.text, _controllerPassword.text);
+                  if (login) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) => UserOverviewPage(login: _controllerLogin.text)),
-                    );
-                } else {
-                  if (_controllerLogin.text == 'admin' && _controllerPassword.text == 'admin') {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AdminOverviewPage()),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(

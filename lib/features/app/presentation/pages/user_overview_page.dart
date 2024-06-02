@@ -1,5 +1,4 @@
-// import 'package:cinema/features/app/presentation/pages/position_page.dart';
-// import 'package:cinema/features/app/presentation/pages/salary_payments_page.dart';
+import 'package:clinic/features/app/presentation/pages/appointment_page.dart';
 import 'package:clinic/features/app/presentation/pages/doctor_page.dart';
 import 'package:clinic/features/app/presentation/pages/patient_page.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +11,7 @@ class UserOverviewPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           bottom: const TabBar(
@@ -24,9 +23,9 @@ class UserOverviewPage extends StatelessWidget {
               Tab(
                 child: Text('Пациенты'),
               ),
-              // Tab(
-              //   child: Text('Выплаты'),
-              // ),
+              Tab(
+                child: Text('Записи к врачам'),
+              ),
             ],
           ),
         ),
@@ -37,13 +36,9 @@ class UserOverviewPage extends StatelessWidget {
           ),
           child: TabBarView(
             children: [
-              // const DepartmentPage(editable: false),
-              // // const UserPositionsPage(),
-              // const PositionsPage(editable: false),
-              // SalaryPaymentsPage(employeeId: login, editable: false),
-              //UserTicketsPage(login: login),
               DoctorPage(editable: false),
               PatientPage(editable: false),
+              AppointmentPage(editable: false),
             ],
           ),
         ),
