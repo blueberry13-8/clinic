@@ -61,7 +61,7 @@ class _MedicalHistoryPageState extends State<_MedicalHistoryPage> {
       items = items
           .where((element) => element.patientId == int.parse(widget.login!))
           .toList();
-    } else if (widget.login != null) {
+    } else if (widget.role == 'Врач' && widget.login != null) {
       items = items
           .where((element) => element.doctorId == int.parse(widget.login!))
           .toList();
@@ -131,7 +131,7 @@ class _MedicalHistoryPageState extends State<_MedicalHistoryPage> {
                     child: MyEditingMedicalHistoryTable(
                       item: state.selectedIndex! >= 0 &&
                               state.selectedIndex! < state.items.length
-                          ? state.items[state.selectedIndex!]
+                          ? filtered(state.items, _searchController.text)[state.selectedIndex!]
                           : null,
                       fields: kMedicalHistoryFields,
                       editable: widget.editable,

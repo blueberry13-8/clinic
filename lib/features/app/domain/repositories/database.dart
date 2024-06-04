@@ -16,7 +16,7 @@ class Database {
 
   // TODO: Use data for current database
   final String user = 'postgres',
-      password = 'postgres',
+      password = 'buter',
       host = 'localhost',
       database = 'clinic_registry';
 

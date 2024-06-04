@@ -20,6 +20,7 @@ class MedicalHistoryTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(items);
     return DataTable2(
       columnSpacing: 12,
       horizontalMargin: 12,

@@ -56,7 +56,7 @@ class UserOverviewPage extends StatelessWidget {
                 role: role,
               ),
               MedicalHistoryPage(
-                editable: false,
+                editable: role == 'Врач',
                 login: login,
                 role: role,
               ),
