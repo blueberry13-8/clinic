@@ -1,12 +1,18 @@
 import 'package:clinic/features/app/presentation/pages/appointment_page.dart';
 import 'package:clinic/features/app/presentation/pages/doctor_page.dart';
+import 'package:clinic/features/app/presentation/pages/medical_history_page.dart';
 import 'package:clinic/features/app/presentation/pages/patient_page.dart';
 import 'package:flutter/material.dart';
 
 class UserOverviewPage extends StatelessWidget {
-  const UserOverviewPage({super.key, required this.login});
+  const UserOverviewPage({
+    super.key,
+    required this.login,
+    required this.role,
+  });
 
   final String login;
+  final String role;
 
   @override
   Widget build(BuildContext context) {
@@ -14,17 +20,22 @@ class UserOverviewPage extends StatelessWidget {
       length: 3,
       child: Scaffold(
         appBar: AppBar(
-          bottom: const TabBar(
+          title: Text('ID: $login, Роль: $role'),
+          bottom: TabBar(
             tabAlignment: TabAlignment.center,
             tabs: [
-              Tab(
-                child: Text('Врачи'),
-              ),
-              Tab(
-                child: Text('Пациенты'),
-              ),
-              Tab(
+              role == 'Пациент'
+                  ? const Tab(
+                      child: Text('Врачи'),
+                    )
+                  : const Tab(
+                      child: Text('Пациенты'),
+                    ),
+              const Tab(
                 child: Text('Записи к врачам'),
+              ),
+              const Tab(
+                child: Text('История болезней'),
               ),
             ],
           ),
@@ -36,9 +47,19 @@ class UserOverviewPage extends StatelessWidget {
           ),
           child: TabBarView(
             children: [
-              DoctorPage(editable: false),
-              PatientPage(editable: false),
-              AppointmentPage(editable: false),
+              role == 'Пациент'
+                  ? const DoctorPage(editable: false)
+                  : const PatientPage(editable: false),
+              AppointmentPage(
+                editable: false,
+                login: login,
+                role: role,
+              ),
+              MedicalHistoryPage(
+                editable: role == 'Врач',
+                login: login,
+                role: role,
+              ),
             ],
           ),
         ),

@@ -1,46 +1,46 @@
-import 'package:clinic/features/app/domain/models/appointment.dart';
-import 'package:clinic/features/app/presentation/bloc/appointment/appointment_cubit.dart';
+import 'package:clinic/features/app/domain/models/medical_history.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../bloc/medical_history/medical_history_cubit.dart';
 import '../my_form_field.dart';
 
-class MyEditingAppointmentTable extends StatefulWidget {
-  const MyEditingAppointmentTable({
+class MyEditingMedicalHistoryTable extends StatefulWidget {
+  const MyEditingMedicalHistoryTable({
     super.key,
     required this.fields,
     this.item,
     required this.editable,
   });
 
-  final Appointment? item;
+  final MedicalHistory? item;
   final List<String> fields;
   final bool editable;
 
   @override
-  State<MyEditingAppointmentTable> createState() =>
-      _MyEditingAppointmentTableState();
+  State<MyEditingMedicalHistoryTable> createState() =>
+      _MyEditingMedicalHistoryTableState();
 }
 
-class _MyEditingAppointmentTableState extends State<MyEditingAppointmentTable> {
+class _MyEditingMedicalHistoryTableState
+    extends State<MyEditingMedicalHistoryTable> {
   @override
   void initState() {
     super.initState();
     if (widget.item == null) {
-      _item = Appointment(
+      _item = MedicalHistory(
         id: 0,
         doctorId: 0,
         patientId: 0,
-        appointmentTime: DateTime.now(),
-        room: '0',
-        status: "Ожидает назначения",
+        diagnosisDate: DateTime.now(),
+        description: '',
       );
     } else {
       _item = widget.item!;
     }
   }
 
-  late Appointment _item;
+  late MedicalHistory _item;
 
   @override
   Widget build(BuildContext context) {
@@ -74,23 +74,17 @@ class _MyEditingAppointmentTableState extends State<MyEditingAppointmentTable> {
         MyFormField(
           enabled: widget.editable,
           fieldName: widget.fields[3],
-          value: widget.item?.appointmentTime,
+          value: widget.item?.diagnosisDate,
           onChanged: (newValue) =>
-              _item = _item.copyWith(appointmentTime: DateTime.parse(newValue)),
+              _item = _item.copyWith(diagnosisDate: DateTime.parse(newValue)),
           editable: widget.editable,
         ),
         MyFormField(
           enabled: widget.editable,
           fieldName: widget.fields[4],
-          value: widget.item?.room,
-          onChanged: (newValue) => _item = _item.copyWith(room: newValue),
-          editable: widget.editable,
-        ),
-        MyFormField(
-          enabled: widget.editable,
-          fieldName: widget.fields[5],
-          value: widget.item?.status,
-          onChanged: (newValue) => _item = _item.copyWith(status: newValue),
+          value: widget.item?.description,
+          onChanged: (newValue) =>
+              _item = _item.copyWith(description: newValue),
           editable: widget.editable,
         ),
         const SizedBox(
@@ -102,7 +96,7 @@ class _MyEditingAppointmentTableState extends State<MyEditingAppointmentTable> {
             ElevatedButton(
               onPressed: () {
                 if (widget.editable) {
-                  context.read<AppointmentCubit>().update(
+                  context.read<MedicalHistoryCubit>().update(
                         _item,
                         widget.item == null,
                       );
@@ -116,7 +110,7 @@ class _MyEditingAppointmentTableState extends State<MyEditingAppointmentTable> {
             ElevatedButton(
               onPressed: () async {
                 if (widget.editable && widget.item != null) {
-                  context.read<AppointmentCubit>().delete(
+                  context.read<MedicalHistoryCubit>().delete(
                         widget.item!,
                       );
                 }

@@ -1,12 +1,13 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:logger/logger.dart';
 import 'package:postgres/postgres.dart';
+
 import '../models/appointment.dart';
 import '../models/doctor.dart';
-import '../models/patient.dart';
 import '../models/medical_history.dart';
-import 'package:crypto/crypto.dart';
+import '../models/patient.dart';
 
 class Database {
   static final Database _db = Database._privateConstructor();
@@ -46,16 +47,16 @@ class Database {
     return conn;
   }
 
-  Future<bool> login(String login, String password) async {
+  Future<bool> login(String login, String password, String role) async {
     await connect();
     var hashedPassword = md5.convert(utf8.encode(password)).toString();
     Result result;
-    try {
+    if (role == 'Пациент') {
       result = await conn!.execute(
         r'SELECT * FROM Patient WHERE id=$1 and password=$2',
         parameters: [login, hashedPassword],
       );
-    } catch (e) {
+    } else {
       result = await conn!.execute(
         r'SELECT * FROM Doctor WHERE id=$1 and password=$2',
         parameters: [login, hashedPassword],
@@ -92,6 +93,7 @@ class Database {
   }
 
   Future<void> addPatient(Patient item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'INSERT INTO Patient (full_name, age, contact_number, address, gender, password) VALUES ($1, $2, $3, $4, $5, $6)',
@@ -101,7 +103,7 @@ class Database {
         item.contactNumber,
         item.address,
         item.gender,
-        item.password,
+        hashedPassword,
       ],
     );
   }
@@ -115,6 +117,7 @@ class Database {
   }
 
   Future<void> updatePatient(Patient item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'UPDATE Patient SET full_name=$1, age=$2, contact_number=$3, address=$4, gender=$5, password=$6 WHERE id=$7',
@@ -124,7 +127,7 @@ class Database {
         item.contactNumber,
         item.address,
         item.gender,
-        item.password,
+        hashedPassword,
         item.id
       ],
     );
@@ -154,6 +157,7 @@ class Database {
   }
 
   Future<void> addDoctor(Doctor item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'INSERT INTO Doctor (full_name, specialty, working_hours, contact_number, password) VALUES ($1, $2, $3, $4, $5)',
@@ -162,7 +166,7 @@ class Database {
         item.specialty,
         item.workingHours,
         item.contactNumber,
-        item.password
+        hashedPassword,
       ],
     );
   }
@@ -176,6 +180,7 @@ class Database {
   }
 
   Future<void> updateDoctor(Doctor item) async {
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
     await conn!.execute(
       r'UPDATE Doctor SET full_name=$1, specialty=$2, working_hours=$3, contact_number=$4, password=$5 WHERE id=$6',
@@ -184,16 +189,23 @@ class Database {
         item.specialty,
         item.workingHours,
         item.contactNumber,
-        item.password,
+        hashedPassword,
         item.id
       ],
     );
   }
 
   /// Appointment
-  Future<List<Appointment>> getAppointments() async {
+  Future<List<Appointment>> getAppointments(
+      {int? patientId, int? doctorId}) async {
     await connect();
     var query = 'SELECT * FROM Appointment';
+    if (patientId != null) {
+      query = 'SELECT * FROM Appointment WHERE patient_id=$patientId';
+    }
+    if (doctorId != null) {
+      query = 'SELECT * FROM Appointment WHERE doctor_id=$doctorId';
+    }
     final result = await conn!.execute(
       query,
     );
@@ -282,7 +294,7 @@ class Database {
   Future<void> addMedicalHistory(MedicalHistory item) async {
     await connect();
     await conn!.execute(
-      r'INSERT INTO MedicalHistory (patient_id, diagnosis_date, doctor_id, escription) VALUES ($1, $2, $3, $4)',
+      r'INSERT INTO MedicalHistory (patient_id, diagnosis_date, doctor_id, description) VALUES ($1, $2, $3, $4)',
       parameters: [
         item.patientId,
         item.diagnosisDate,
@@ -303,7 +315,7 @@ class Database {
   Future<void> updateMedicalHistory(MedicalHistory item) async {
     await connect();
     await conn!.execute(
-      r'UPDATE MedicalHistory SET patient_id=$1, diagnosis_date=$2, doctor_id=$3, escription=$4 WHERE id=$5',
+      r'UPDATE MedicalHistory SET patient_id=$1, diagnosis_date=$2, doctor_id=$3, description=$4 WHERE id=$5',
       parameters: [
         item.patientId,
         item.diagnosisDate,
