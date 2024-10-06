@@ -16,7 +16,7 @@ class Database {
 
   // TODO: Use data for current database
   final String user = 'postgres',
-      password = 'buter',
+      password = 'postgres',
       host = 'localhost',
       database = 'clinic_registry';
 
@@ -33,16 +33,22 @@ class Database {
       return this.conn!;
     }
     // logger.i("Starting connection to DB");
-    final conn = await Connection.open(
-      Endpoint(
-        host: host,
-        database: database,
-        username: user,
-        password: password,
-      ),
-      settings: const ConnectionSettings(sslMode: SslMode.disable),
-    );
-    // logger.i('Connected to DB');
+    final Connection conn;
+    try {
+      conn = await Connection.open(
+        Endpoint(
+          host: host,
+          database: database,
+          username: user,
+          password: password,
+        ),
+        settings: const ConnectionSettings(sslMode: SslMode.disable),
+      );
+    } catch (e, stackTrace) {
+      logger.e('Unable to connect to DB', error: e, stackTrace: stackTrace);
+      rethrow;
+    }
+    logger.d('Connected to DB');
     this.conn = conn;
     return conn;
   }
