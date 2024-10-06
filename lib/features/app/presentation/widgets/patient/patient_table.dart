@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:clinic/features/app/domain/models/patient.dart';
 import '../../bloc/patient/patient_cubit.dart';
@@ -20,13 +21,14 @@ class PatientTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final patientFields = kPatientFields.sublist(0, kPatientFields.length - 1);
     return DataTable2(
       columnSpacing: 12,
       horizontalMargin: 12,
       minWidth: 600,
       showCheckboxColumn: false,
-      columns: editable ? kPatientFields.map((e) => DataColumn2(label: Text(e),),).toList():
-      kPatientFields.sublist(1).map((e) => DataColumn2(label: Text(e),),).toList(),
+      columns: editable ? patientFields.map((e) => DataColumn2(label: Text(e),),).toList():
+      patientFields.sublist(1).map((e) => DataColumn2(label: Text(e),),).toList(),
       rows: items.asMap().entries.map(
             (entry) {
           final index = entry.key;
@@ -57,9 +59,6 @@ class PatientTable extends StatelessWidget {
               ),
               DataCell(
                 Text(item.gender),
-              ),
-              DataCell(
-                Text(item.password),
               ),
             ],
           );
