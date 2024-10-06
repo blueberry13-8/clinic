@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:bloc_presentation/bloc_presentation.dart';
-import 'package:clinic/common/exceptions/DatabaseException.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/models/doctor.dart';
