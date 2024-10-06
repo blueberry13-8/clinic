@@ -20,13 +20,14 @@ class DoctorTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final doctorFields = kDoctorFields.sublist(0, kDoctorFields.length - 1);
     return DataTable2(
       columnSpacing: 12,
       horizontalMargin: 12,
       minWidth: 600,
       showCheckboxColumn: false,
-      columns: editable ? kDoctorFields.map((e) => DataColumn2(label: Text(e),),).toList():
-      kDoctorFields.sublist(1).map((e) => DataColumn2(label: Text(e),),).toList(),
+      columns: editable ? doctorFields.map((e) => DataColumn2(label: Text(e),),).toList():
+      doctorFields.sublist(1).map((e) => DataColumn2(label: Text(e),),).toList(),
       rows: items.asMap().entries.map(
             (entry) {
           final index = entry.key;
@@ -54,9 +55,6 @@ class DoctorTable extends StatelessWidget {
               ),
               DataCell(
                 Text(item.contactNumber),
-              ),
-              DataCell(
-                Text(item.password),
               ),
             ],
           );

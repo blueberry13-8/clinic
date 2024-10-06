@@ -8,6 +8,7 @@ class MyFormField<T> extends StatefulWidget {
     this.onChanged,
     this.enabled = true,
     this.editable = true,
+    this.isPassword = false,
   });
 
   final String fieldName;
@@ -15,6 +16,7 @@ class MyFormField<T> extends StatefulWidget {
   final void Function(String)? onChanged;
   final bool enabled;
   final bool editable;
+  final bool isPassword;
 
   @override
   State<MyFormField<T>> createState() => _MyFormFieldState<T>();
@@ -72,6 +74,7 @@ class _MyFormFieldState<T> extends State<MyFormField<T>> {
               hintText: widget.fieldName,
               errorText: errorText,
             ),
+            obscureText: widget.isPassword,
           ),
         ),
       ],

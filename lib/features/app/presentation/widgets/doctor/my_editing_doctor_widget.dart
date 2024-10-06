@@ -94,6 +94,7 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
           onChanged: (newValue) =>
           _item = _item.copyWith(password: newValue),
           editable: widget.editable,
+          isPassword: true,
         ),
         const SizedBox(
           height: 30,
