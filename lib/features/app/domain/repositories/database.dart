@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:logger/logger.dart';
 import 'package:postgres/postgres.dart';
 
+import '../../../../common/exceptions/DatabaseException.dart';
 import '../models/appointment.dart';
 import '../models/doctor.dart';
 import '../models/medical_history.dart';
@@ -53,25 +54,22 @@ class Database {
     return conn;
   }
 
-  Future<bool> login(String login, String password, String role) async {
+  Future<(int?, String)> login(String contactNumber, String password) async {
     await connect();
     var hashedPassword = md5.convert(utf8.encode(password)).toString();
     Result result;
-    if (role == 'Пациент') {
-      result = await conn!.execute(
-        r'SELECT * FROM Patient WHERE id=$1 and password=$2',
-        parameters: [login, hashedPassword],
-      );
-    } else {
-      result = await conn!.execute(
-        r'SELECT * FROM Doctor WHERE id=$1 and password=$2',
-        parameters: [login, hashedPassword],
-      );
-    }
-    if (result.length == 1) {
-      return true;
-    }
-    return false;
+
+    result = await conn!.execute(
+      r'SELECT * FROM Patient WHERE contact_number=$1 and password=$2',
+      parameters: [contactNumber, hashedPassword],
+    );
+    if (result.length == 1) return (result.firstOrNull?.first as int?, 'Пациент');
+    result = await conn!.execute(
+      r'SELECT * FROM Doctor WHERE contact_number=$1 and password=$2',
+      parameters: [contactNumber, hashedPassword],
+    );
+    if (result.length == 1) return (result.firstOrNull?.first as int?, 'Врач');
+    return (null, '');
   }
 
   /// Patient
@@ -98,9 +96,25 @@ class Database {
     return items;
   }
 
+  Future<bool> isContactNumberOccupied(String contactNumber) async {
+    final resultPatient = await conn!.execute(
+      r'SELECT COUNT(*) FROM Patient WHERE contact_number = $1',
+      parameters: [contactNumber],
+    );
+    final resultDoctor = await conn!.execute(
+      r'SELECT COUNT(*) FROM Doctor WHERE contact_number = $1',
+      parameters: [contactNumber],
+    );
+    return (resultPatient.first.first! as int) > 0 ||
+        (resultDoctor.first.first! as int) > 0;
+  }
+
   Future<void> addPatient(Patient item) async {
-    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
+    if (await isContactNumberOccupied(item.contactNumber)) {
+      throw DatabaseException("Номер телефона занят");
+    }
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await conn!.execute(
       r'INSERT INTO Patient (full_name, age, contact_number, address, gender, password) VALUES ($1, $2, $3, $4, $5, $6)',
       parameters: [
@@ -123,8 +137,11 @@ class Database {
   }
 
   Future<void> updatePatient(Patient item) async {
-    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
+    if (await isContactNumberOccupied(item.contactNumber)) {
+      throw DatabaseException("Номер телефона занят");
+    }
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await conn!.execute(
       r'UPDATE Patient SET full_name=$1, age=$2, contact_number=$3, address=$4, gender=$5, password=$6 WHERE id=$7',
       parameters: [
@@ -163,8 +180,12 @@ class Database {
   }
 
   Future<void> addDoctor(Doctor item) async {
-    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
+    if (await isContactNumberOccupied(item.contactNumber)) {
+      logger.e("Номер телефона занят");
+      throw DatabaseException("Номер телефона занят");
+    }
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await conn!.execute(
       r'INSERT INTO Doctor (full_name, specialty, working_hours, contact_number, password) VALUES ($1, $2, $3, $4, $5)',
       parameters: [
@@ -186,8 +207,12 @@ class Database {
   }
 
   Future<void> updateDoctor(Doctor item) async {
-    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await connect();
+    if (await isContactNumberOccupied(item.contactNumber)) {
+      logger.e("Номер телефона занят");
+      throw DatabaseException("Номер телефона занят");
+    }
+    final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await conn!.execute(
       r'UPDATE Doctor SET full_name=$1, specialty=$2, working_hours=$3, contact_number=$4, password=$5 WHERE id=$6',
       parameters: [

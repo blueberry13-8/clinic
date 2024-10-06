@@ -1,14 +1,17 @@
 import 'package:bloc/bloc.dart';
+import 'package:bloc_presentation/bloc_presentation.dart';
+import 'package:clinic/common/exceptions/DatabaseException.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/models/doctor.dart';
 import '../../../domain/repositories/database.dart';
 
+part 'doctor_cubit.freezed.dart';
+part 'doctor_event.dart';
 part 'doctor_state.dart';
 
-part 'doctor_cubit.freezed.dart';
-
-class DoctorCubit extends Cubit<DoctorState> {
+class DoctorCubit extends Cubit<DoctorState>
+    with BlocPresentationMixin<DoctorState, DoctorEvent> {
   DoctorCubit() : super(const DoctorState.initial());
 
   void select(int newIndex) {
@@ -111,8 +114,12 @@ class DoctorCubit extends Cubit<DoctorState> {
         ),
       );
     } catch (e) {
-      emit(DoctorState.error(e.toString()));
-      rethrow;
+      emitPresentation(FailedToAddUser(e.toString()));
+      if (prevState == null) {
+        await load();
+      } else {
+        emit(prevState);
+      }
     }
   }
 }

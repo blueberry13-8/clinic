@@ -38,6 +38,7 @@ dependencies:
   postgres: ^3.4.0
   logger: ^2.0.2+1
   crypto: ^3.0.3
+  bloc_presentation: ^1.0.0
 
 dev_dependencies:
   flutter_test:

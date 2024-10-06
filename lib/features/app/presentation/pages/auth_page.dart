@@ -15,7 +15,6 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   late TextEditingController _controllerLogin;
   late TextEditingController _controllerPassword;
-  String _role = 'Пациент';
 
   @override
   void initState() {
@@ -51,7 +50,7 @@ class _AuthPageState extends State<AuthPage> {
             TextFormField(
               controller: _controllerLogin,
               decoration: const InputDecoration(
-                hintText: 'Логин',
+                hintText: 'Номер телефона',
               ),
             ),
             const SizedBox(
@@ -63,23 +62,6 @@ class _AuthPageState extends State<AuthPage> {
                 hintText: 'Пароль',
               ),
               obscureText: true,
-            ),
-            const SizedBox(
-              height: 40,
-            ),
-            DropdownButton<String>(
-              value: _role,
-              onChanged: (value) {
-                setState(() {
-                  _role = value!;
-                });
-              },
-              items: <String>['Пациент', 'Врач', 'Админ'].map((String value) {
-                return DropdownMenuItem<String>(
-                  value: value,
-                  child: Text(value),
-                );
-              }).toList(),
             ),
             const SizedBox(
               height: 40,
@@ -96,22 +78,22 @@ class _AuthPageState extends State<AuthPage> {
                   return;
                 }
                 if (_controllerLogin.text == 'admin' &&
-                    _controllerPassword.text == 'Admin123' && _role == 'Админ') {
+                    _controllerPassword.text == 'Admin123') {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const AdminOverviewPage()),
                   );
-                } else if (_role == 'Пациент' || _role == 'Врач') {
-                  bool login = await Database().login(
-                      _controllerLogin.text, _controllerPassword.text, _role);
-                  if (login) {
+                } else {
+                  final (id, role) = await Database().login(
+                      _controllerLogin.text, _controllerPassword.text);
+                  if (id != null) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => UserOverviewPage(
-                          login: _controllerLogin.text,
-                          role: _role,
+                          login: id.toString(),
+                          role: role,
                         ),
                       ),
                     );
@@ -123,13 +105,7 @@ class _AuthPageState extends State<AuthPage> {
                     );
                   }
                 }
-                else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Неправильные данные. Попробуйте снова.'),
-                    ),
-                  );
-                }
+
               },
               child: const Text('Войти'),
             ),
