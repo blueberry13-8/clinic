@@ -1,8 +1,9 @@
+import 'package:bloc_presentation/bloc_presentation.dart';
 import 'package:clinic/features/app/domain/models/patient.dart';
 import 'package:clinic/features/app/presentation/bloc/patient/patient_cubit.dart';
 import 'package:clinic/features/app/presentation/widgets/patient/my_editing_patient_widget.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../widgets/patient/patient_table.dart';
 
@@ -55,86 +56,98 @@ class _PatientPageState extends State<_PatientPage> {
     return items
         .where(
           (element) => element.fullName.toLowerCase().contains(
-        query.toLowerCase(),
-      ),
-    )
+                query.toLowerCase(),
+              ),
+        )
         .toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    final state = context.watch<PatientCubit>().state;
-    if (state case Success state) {
-      return Stack(
-        children: [
-          if (widget.editable)
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FloatingActionButton(
-                  onPressed: () {
-                    context.read<PatientCubit>().select(-1);
-                  },
-                  child: const Icon(Icons.add),
-                ),
-              ),
+    return BlocPresentationListener<PatientCubit, PatientEvent>(
+      listener: (context, event) {
+        if (event case FailedToAddUser event) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(event.message),
             ),
-          SingleChildScrollView(
-            child: Column(
+          );
+        }
+      },
+      child: BlocBuilder<PatientCubit, PatientState>(
+        builder: (context, state) {
+          if (state case Success state) {
+            return Stack(
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 80.0,
-                    vertical: 10,
-                  ),
-                  child: TextFormField(
-                    controller: _searchController,
-                    onChanged: (newValue) => setState(() {}),
-                    decoration: const InputDecoration(
-                      hintText: 'Поиск...',
-                      icon: Icon(
-                        Icons.search,
+                if (widget.editable)
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          context.read<PatientCubit>().select(-1);
+                        },
+                        child: const Icon(Icons.add),
                       ),
                     ),
                   ),
-                ),
-                ConstrainedBox(
-                  constraints: const BoxConstraints(maxHeight: 400),
-                  child: PatientTable(
-                    items:
-                    filtered(state.items, _searchController.text),
-                    selectedIndex: state.selectedIndex,
-                    editable: widget.editable,
+                SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 80.0,
+                          vertical: 10,
+                        ),
+                        child: TextFormField(
+                          controller: _searchController,
+                          onChanged: (newValue) => setState(() {}),
+                          decoration: const InputDecoration(
+                            hintText: 'Поиск...',
+                            icon: Icon(
+                              Icons.search,
+                            ),
+                          ),
+                        ),
+                      ),
+                      ConstrainedBox(
+                        constraints: const BoxConstraints(maxHeight: 400),
+                        child: PatientTable(
+                          items: filtered(state.items, _searchController.text),
+                          selectedIndex: state.selectedIndex,
+                          editable: widget.editable,
+                        ),
+                      ),
+                      if (state.selectedIndex != null)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 150.0,
+                            vertical: 20,
+                          ),
+                          child: MyEditingPatientTable(
+                            item: state.selectedIndex! >= 0 &&
+                                    state.selectedIndex! < state.items.length
+                                ? state.items[state.selectedIndex!]
+                                : null,
+                            fields: kPatientFields,
+                            editable: widget.editable,
+                          ),
+                        ),
+                    ],
                   ),
                 ),
-                if (state.selectedIndex != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 150.0,
-                      vertical: 20,
-                    ),
-                    child: MyEditingPatientTable(
-                      item: state.selectedIndex! >= 0 &&
-                          state.selectedIndex! <
-                              state.items.length
-                          ? state.items[state.selectedIndex!]
-                          : null,
-                      fields: kPatientFields,
-                      editable: widget.editable,
-                    ),
-                  ),
               ],
-            ),
-          ),
-        ],
-      );
-    } else if (state case Loading || Initial) {
-      return const CircularProgressIndicator();
-    } else {
-      return const Center(
-        child: Text('Error'),
-      );
-    }
+            );
+          } else if (state case Loading() || Initial()) {
+            return const CircularProgressIndicator();
+          } else {
+            return const Center(
+              child: Text('Error'),
+            );
+          }
+        },
+      ),
+    );
   }
 }

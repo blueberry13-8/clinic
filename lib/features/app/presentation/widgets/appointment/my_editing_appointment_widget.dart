@@ -113,7 +113,7 @@ class _MyEditingAppointmentTableState extends State<MyEditingAppointmentTable> {
                       );
                 }
               },
-              child: const Text('Обновить'),
+              child: Text(widget.item == null ? 'Добавить' : 'Обновить'),
             ),
             const SizedBox(
               width: 15,

@@ -112,7 +112,7 @@ class _MyEditingDoctorTableState extends State<MyEditingDoctorTable> {
                   );
                 }
               },
-              child: const Text('Обновить'),
+              child: Text(widget.item == null ? 'Добавить' : 'Обновить'),
             ),
             const SizedBox(
               width: 15,

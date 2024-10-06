@@ -1,14 +1,16 @@
 import 'package:bloc/bloc.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:bloc_presentation/bloc_presentation.dart';
 import 'package:clinic/features/app/domain/models/patient.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '../../../domain/repositories/database.dart';
 
+part 'patient_cubit.freezed.dart';
+part 'patient_event.dart';
 part 'patient_state.dart';
 
-part 'patient_cubit.freezed.dart';
-
-class PatientCubit extends Cubit<PatientState> {
+class PatientCubit extends Cubit<PatientState>
+    with BlocPresentationMixin<PatientState, PatientEvent> {
   PatientCubit() : super(const PatientState.initial());
 
   void select(int newIndex) {
@@ -51,9 +53,9 @@ class PatientCubit extends Cubit<PatientState> {
       await Database().deletePatient(item);
       final items = await Database().getPatients();
       final selectedIndex =
-      prevState != null && item.id == prevState.selectedIndex
-          ? null
-          : prevState?.selectedIndex;
+          prevState != null && item.id == prevState.selectedIndex
+              ? null
+              : prevState?.selectedIndex;
       emit(
         PatientState.success(
           items: items,
@@ -90,9 +92,9 @@ class PatientCubit extends Cubit<PatientState> {
   }
 
   Future<void> update(
-      Patient item, [
-        bool isAdd = false,
-      ]) async {
+    Patient item, [
+    bool isAdd = false,
+  ]) async {
     Success? prevState;
     if (state case Success state) {
       prevState = state.copyWith();
@@ -112,8 +114,12 @@ class PatientCubit extends Cubit<PatientState> {
         ),
       );
     } catch (e) {
-      emit(PatientState.error(e.toString()));
-      rethrow;
+      emitPresentation(FailedToAddUser(e.toString()));
+      if (prevState == null) {
+        await load();
+      } else {
+        emit(prevState);
+      }
     }
   }
 }

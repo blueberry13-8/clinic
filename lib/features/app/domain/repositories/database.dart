@@ -4,7 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:logger/logger.dart';
 import 'package:postgres/postgres.dart';
 
-import '../../../../common/exceptions/DatabaseException.dart';
+import '../../../../common/exceptions/database_exception.dart';
 import '../models/appointment.dart';
 import '../models/doctor.dart';
 import '../models/medical_history.dart';
@@ -138,9 +138,6 @@ class Database {
 
   Future<void> updatePatient(Patient item) async {
     await connect();
-    if (await isContactNumberOccupied(item.contactNumber)) {
-      throw DatabaseException("Номер телефона занят");
-    }
     final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await conn!.execute(
       r'UPDATE Patient SET full_name=$1, age=$2, contact_number=$3, address=$4, gender=$5, password=$6 WHERE id=$7',
@@ -208,10 +205,6 @@ class Database {
 
   Future<void> updateDoctor(Doctor item) async {
     await connect();
-    if (await isContactNumberOccupied(item.contactNumber)) {
-      logger.e("Номер телефона занят");
-      throw DatabaseException("Номер телефона занят");
-    }
     final hashedPassword = md5.convert(utf8.encode(item.password)).toString();
     await conn!.execute(
       r'UPDATE Doctor SET full_name=$1, specialty=$2, working_hours=$3, contact_number=$4, password=$5 WHERE id=$6',
