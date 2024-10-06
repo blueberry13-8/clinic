@@ -11,11 +11,15 @@ class MyEditingAppointmentTable extends StatefulWidget {
     required this.fields,
     this.item,
     required this.editable,
+    this.userId,
+    this.userRole,
   });
 
   final Appointment? item;
   final List<String> fields;
   final bool editable;
+  final String? userId;
+  final String? userRole;
 
   @override
   State<MyEditingAppointmentTable> createState() =>
@@ -29,7 +33,7 @@ class _MyEditingAppointmentTableState extends State<MyEditingAppointmentTable> {
     if (widget.item == null) {
       _item = Appointment(
         id: 0,
-        doctorId: 0,
+        doctorId: widget.userRole == 'Врач' ? int.parse(widget.userId!) : 0,
         patientId: 0,
         appointmentTime: DateTime.now(),
         room: '0',
@@ -56,9 +60,10 @@ class _MyEditingAppointmentTableState extends State<MyEditingAppointmentTable> {
           editable: widget.editable,
         ),
         MyFormField(
-          enabled: widget.editable,
+          enabled: widget.userRole == 'Врач' ? false : widget.editable,
           fieldName: widget.fields[1],
-          value: widget.item?.doctorId,
+          value:
+              widget.userRole == 'Врач' ? widget.userId : widget.item?.doctorId,
           onChanged: (newValue) =>
               _item = _item.copyWith(doctorId: int.parse(newValue)),
           editable: widget.editable,

@@ -51,7 +51,7 @@ class UserOverviewPage extends StatelessWidget {
                   ? const DoctorPage(editable: false)
                   : const PatientPage(editable: false),
               AppointmentPage(
-                editable: false,
+                editable: role == 'Врач',
                 login: login,
                 role: role,
               ),

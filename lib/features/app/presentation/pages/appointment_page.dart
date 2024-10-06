@@ -137,6 +137,8 @@ class _AppointmentPageState extends State<_AppointmentPage> {
                           : null,
                       fields: kAppointmentFields,
                       editable: widget.editable,
+                      userId: widget.login,
+                      userRole: widget.role,
                     ),
                   ),
               ],
